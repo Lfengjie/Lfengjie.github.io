@@ -21,8 +21,7 @@ stateType | 状态信息
 crcType | crc类型
 snapshotType | 快照
 
-![日志逻辑架构](/images/posts/wal-log.png)
-
+![日志逻辑架构](/images/posts/wal_log.png)
 
 - crcType
 每个新的日志文件的第一条记录都会是crcType类型的记录，crcType也只会在每个日志文件的开始时写入，用于记录上一个文件最后的crc是什么
@@ -43,7 +42,7 @@ wal通过封装的encoder和decoder模块来实现日志读写。
 wal通过encoder实现写日志，在这个模块中会完成crc的计算。wal为了更好的管理数据，日志中的每条数据都会以8字节对齐，wal会自动对齐字节。
 日志写入的流程如下。
 
-![encoder写日志流程](/images/posts/encoder-flow.png)
+![encoder写日志流程](/images/posts/encoder_flow.png)
 
 图中的crc是增量计算，以之前的所有日志数据为增量基础。
 wal只关注写入日志，不会校验日志的index是否重复，如果将raft节点未提交的日志粗暴的写入到wal中时可能会造成数据的混乱。etcd-raft官方提供的例子就有这个问题(它只是简单的将core传过来的数据粗暴的写入到日志中)
