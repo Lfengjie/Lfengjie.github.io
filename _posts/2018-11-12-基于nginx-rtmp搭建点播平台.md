@@ -114,3 +114,6 @@ rtmp {
 ### 访问视频
 - 在/nginxData/mp4目录下放置一个名为test.mp4的视频文件
 - 在本地通过VLC播放该视频, 点击VLC播放器file -> open network, 填写地址 rtmp://<ip>:<port>/vod/test.mp4
+
+## 尾记
+转载请注明原地址，冯杰的博客：[http://Lfengjie.github.io](http://Lfengjie.github.io) 谢谢！
