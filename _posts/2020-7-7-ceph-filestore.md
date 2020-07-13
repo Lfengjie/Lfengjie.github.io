@@ -60,6 +60,7 @@ FileStore的主题代码在ceph的 src/os 下，这其中不仅有filestore的�
 #### 源码分析
 
 - 入口函数：上层调用 queue_transactions 这个方法将op传入到filestore来，开启filestore的写流程，首先将数据传入到filejournal中
+
 ```
 int FileStore::queue_transactions(CollectionHandle& ch, vector<Transaction>& tls,
 				  TrackedOpRef osd_op,
