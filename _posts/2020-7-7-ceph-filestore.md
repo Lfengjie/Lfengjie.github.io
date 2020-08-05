@@ -175,6 +175,7 @@ void FileJournal::submit_entry(uint64_t seq, bufferlist& e, uint32_t orig_len,
 ```
 
 - FileJournal写流程通过写线程将数据写入到journal中，并在写入完成后回调
+
 ```
 // filejournal写线程的入口函数，这个是单线程运行
 void FileJournal::write_thread_entry()
@@ -203,8 +204,8 @@ void FileJournal::write_thread_entry()
 ```
 
 - FileJournal::queue_completions_thru journal：写入后回调
-
 写journal线程通过Filejournal::write_thread完成，流程比较简单，执行完成后，就会调用:
+
 ```
 void FileJournal::queue_completions_thru(uint64_t seq)
 {
@@ -233,8 +234,9 @@ void FileJournal::queue_completions_thru(uint64_t seq)
   finisher_cond.Signal();
 }
 ```
+
 - JournalingObjectStore::finisher
-这里的回调就是C_JournaledAhead，然后会执行下面这个函数，主要干两件事情：1）将op放入filestore队列排队 2）将ondisk回调放入FileStore::ondisk_finisher：
+这里的回调就是C_JournaledAhead，然后会执行下面这个函数，主要干两件事情：1）将op放入filestore队列排队 2）将ondisk回调放入FileStore::ondisk_finisher
 
 ```
 void FileStore::_journaled_ahead(OpSequencer *osr, Op *o, Context *ondisk)
@@ -272,6 +274,7 @@ void FileStore::queue_op(OpSequencer *osr, Op *o)
 
 - FileStore::op_tp，这是写入数据到pagecache的线程，入口函数为 FileStore::_do_op, 
 op 在 PG对应的OpSequencer排队以后，说明PG有OP需要执行，这时候线程池就会对其处理，入口函数:
+
 ```
 unsigned FileStore::_do_op(OpSequencer *osr, ThreadPool::TPHandle &handle)
 {
@@ -290,9 +293,10 @@ unsigned FileStore::_do_op(OpSequencer *osr, ThreadPool::TPHandle &handle)
   apply_manager.op_apply_finish(o->op);
 }
 ```
-对于这个apply_lock有优化的空间，因为如果多个线程都获得同一个osr时，由于apply_lock的存在造成多个线程都被阻塞了，而造成其他 PG 队列的数据不能被及时处理，可以osr同一时间只能被一个线程获取从而去掉apply_lock
 
+对于这个apply_lock有优化的空间，因为如果多个线程都获得同一个osr时，由于apply_lock的存在造成多个线程都被阻塞了，而造成其他 PG 队列的数据不能被及时处理，可以osr同一时间只能被一个线程获取从而去掉apply_lock
 写执行完成后，线程还会执行一个finish函数:
+
 ```
 void FileStore::_finish_op(OpSequencer *osr)
 {
@@ -362,7 +366,8 @@ void FileStore::sync_entry()
   stop = false;
   lock.Unlock();
 }
-
+```
+```
 bool JournalingObjectStore::ApplyManager::commit_start()
 {
   bool ret = false;
@@ -396,8 +401,8 @@ bool JournalingObjectStore::ApplyManager::commit_start()
 }
 ```
 这里比较晦涩的地方是，sync线程先pause住FileStore::op_tp线程池，然后调用commit_start(), pause后说明线程池不会再有新的apply请求了，为什么还设置变量blocked为true？
-
 首先，设置这个变量为true，目的是防止继续apply:
+
 ```
 uint64_t JournalingObjectStore::ApplyManager::op_apply_start(uint64_t op)
 {
