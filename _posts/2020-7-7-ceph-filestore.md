@@ -124,6 +124,8 @@ int FileStore::queue_transactions(CollectionHandle& ch, vector<Transaction>& tls
   logger->tinc(l_filestore_queue_transaction_latency_avg, end - start);
   return r;
 }
+```
+```
 
 // 将数据传入到FileJournal中
 void JournalingObjectStore::_op_journal_transactions(
@@ -138,7 +140,8 @@ void JournalingObjectStore::_op_journal_transactions(
     apply_manager.add_waiter(op, onjournal);
   }
 }
-
+```
+```
 void FileJournal::submit_entry(uint64_t seq, bufferlist& e, uint32_t orig_len,
 			       Context *oncommit, TrackedOpRef osd_op)
 {
